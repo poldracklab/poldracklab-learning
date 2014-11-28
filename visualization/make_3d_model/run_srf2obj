@@ -1,0 +1,10 @@
+#!/bin/sh
+
+# Convert from surface to asc
+mris_convert $1 $1.asc
+
+# Rename to srf
+mv $1.asc $1.srf
+
+# Now convert to obj
+./srf2obj $1.srf > $1.obj
