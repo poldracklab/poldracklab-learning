@@ -35,5 +35,5 @@ with make_tmp_folder() as tmp_dir:
     display.savefig(image_name) 
     plt.close()
     all_images.append(image_name)  
-    command = " ".join(all_images)
-    os.system("convert -delay 50 %s -loop 1 %s" %(command,gif_name))
+  command = " ".join(all_images)
+  os.system("convert -delay 50 %s -loop 1 %s" %(command,gif_name))
