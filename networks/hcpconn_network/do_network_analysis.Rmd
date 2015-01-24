@@ -1,0 +1,140 @@
+---
+title: "HCP Network Analysis"
+author: "Vanessa Sochat"
+date: "01/24/2015"
+output: html_document
+---
+
+# Reading in data
+
+Let's try doing a simple heatmap clustering and network analysis example with connectivity data from HCP, it's super easy in R. You can read in data with read.table or read.csv, and be sure to set the delimiter. If you have string data, you will want to add stringsAsFactors = False, otherwise you have to deal with factors (which can introduce errors unknowingly). Only use factors if you know what you want to do with them!
+
+```{r}
+data = read.table("parcel_matrix.csv",sep=",",head=TRUE)
+# dim is the standard command to see size
+dim(data)
+# head is the standard command to "peek" at the data, but I'll select a smaller subset to show
+# head(data)
+data[1:10,1:10]
+```
+
+Let's now read in the parcel data:
+
+```{r}
+parcels = read.csv("parcels.csv",sep=",",head=TRUE,stringsAsFactors=FALSE)
+parcels[1:10,]
+```
+
+## Make some labels
+
+Let's use the IDs to generate a label that has Hemisphere.Community.ID
+
+```{r}
+labels = paste(parcels$Hem,parcels$Community,parcels$ParcelID,sep=".")
+labels[1:10]
+```
+
+Set the rownames and column names to be the labels, based on the parcel id.  It's probably a 1..333 order, but it's dangerous to assume it's always like that. R also adds "X" to numerical column names, so we will get rid of that.
+
+
+```{r}
+colnames(data) = gsub("X","",colnames(data))
+rowidx = match(rownames(data),parcels$ParcelID) 
+colidx = match(colnames(data),parcels$ParcelID)
+colnames(data) = labels[colidx]
+rownames(data) = labels[rowidx]
+data[1:10,1:10]
+```
+
+## Do the heatmap!
+
+Now let's do a basic heatmap clustering, and we will cluster both rows and columns. I like to use pheatmap because it's not ugly.
+
+```{r}
+library(pheatmap) #install with install.packages("pheatmap")
+pheatmap(data,main="Heatmap clustering of HCP rsfMRI Connectivity")
+```
+
+And of course we want to get the groups from that. How does pheatmap work again?
+
+```{r}
+?pheatmap
+```
+
+Take a look at the different input parameters - we can specify how we want to do the clustering (hierarchical or kmeans and specify k) - it will accept the same arguments as the R standard function "hclust" so type ?hclust to see what those are), as well as the similarity metric (e.g., euclidean, correlation) and you can also choose to cluster the rows or columns (or not). For example, here is the matrix as is, without any clustering:
+
+```{r}
+pheatmap(data,cluster_rows=FALSE,cluster_cols=FALSE,main="HCP Matrix, no clustering")
+```
+
+This would be worthwhile to also do with the raw data - clustering a matrix of correlations is (I think) finding groups that have similar correlation relationships, and that is (possibly?) different from a clustering starting with raw timeseries. This strategy may be totally inappropriate for that.
+
+## Make it pretty
+
+pheatmap is > heatmap or heatmap2 because it's so darn pretty. If you use either of the latter you only get an ok looking plot if it's relatively small.  ggplot2 can also make nice heatmaps, but it's SO much harder to use.  Here are some params to be aware of:
+
+- look at "annotation_colors" if you want custom coloring of the trees
+- look at show_row/colnames if you want to get rid of those
+- look at fontsize_* to customize fonts
+- filename,width,height to get it directly to a nice picture! :)
+
+## Getting the result
+
+```{r}
+mappy = pheatmap(data,main="Heatmap clustering of HCP rsfMRI Connectivity")
+
+# Here is the row ordering after clustering
+mappy$tree_row # same for mappy$tree_col
+```
+
+And to look at what you can extract from that, do:
+mappy$tree_row$[PRESS TAB TO AUTOCOMPLETE]. Then to save stuffs, you can just do:
+
+```{r}
+save(mappy,file="mydata.Rda")
+# and then to load
+load("mydata.Rda")
+```
+
+Boom! Super easy! You should also check out the package "sparcl" for sparse (hierarhical and kmeans) clustering (eg, elastic net in an unsupervised context). Now let's do a quick network analysis. We COULD do this:
+
+```{r}
+library(qgraph) # install.packages("qgraph")
+# We COULD do this...
+# qg = qgraph(data, layout="spring",
+#            label.cex=0.5, labels=colnames(data), 
+#            label.scale=FALSE,
+#            title="HCP Network!",
+#            posCol="green",negCol="red",
+#            color = "purple")
+```
+
+but that might not be smart because we need to threshold our data first! It will probably take forever to run and produce a stinky green cloud.
+
+```{r}
+# make thresholded matrix
+cat("How many values are not zero before?\n")
+length(which(data!=0))
+
+thresh = data
+thresh[thresh<.5] = 0
+
+cat("How many values are not zero after?\n")
+length(which(thresh!=0))
+
+qg = qgraph(thresh, layout="spring",
+            label.cex=0.5, labels=colnames(thresh), 
+            label.scale=FALSE,
+            title="HCP Network Thresholded at 0.5!",
+            posCol="green",negCol="red",
+            color = "purple")
+```
+
+And take a look at the output to get information about the clustering, specifically, the connections:
+
+```{r}
+# qg$Edgelist
+# qg$graphAttributes$[PRESS TAB]
+```
+
+Remember that any kind of data you produce in R that is static, we can easily export the data and make into something interactive. You can also try shiny, or figure out an analysis / algorithm you like in R, and implement it in python (because I sometimes just like python better.)
