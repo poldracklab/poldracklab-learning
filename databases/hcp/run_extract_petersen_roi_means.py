@@ -1,5 +1,9 @@
 #!/usr/bin/python
 
+# This script will take as input a 4D image of single subject cope maps, and extract the mean value for
+# each of the petersen rois. Output will be a table of subjects (rows) by parcels (columns) and each
+# value corresponds to the mean signal within the parcel
+
 from glob import glob
 import os
 
@@ -27,6 +31,6 @@ for input_nii in inputs_nii:
     filey.writelines("#SBATCH --error=.out/coverage_%s.err\n" %(base_name))
     filey.writelines("#SBATCH --time=2-00:00\n")
     filey.writelines("#SBATCH --mem=64000\n")
-    filey.writelines("python /scratch/PI/russpold/work/HCP/timeseries/script/extract_petersen_timeseries.py %s %s %s %s\n" %(input_nii,parcels_file,output_directory,copes_directory))
+    filey.writelines("python /scratch/PI/russpold/work/HCP/timeseries/script/extract_petersen_roi_means.py %s %s %s %s\n" %(input_nii,parcels_file,output_directory,copes_directory))
     filey.close()
     os.system("sbatch -p russpold .job/%s_petersen_ts.job" %(base_name))
