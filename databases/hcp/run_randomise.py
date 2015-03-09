@@ -8,6 +8,9 @@ from glob import glob
 cope_lists = glob("/scratch/PI/russpold/work/HCP/group_maps/copes/*copes.txt")
 output_directory = "/scratch/PI/russpold/work/HCP/group_maps/nii"
 
+# These did not complete due to Sherlock blips - are being rerun
+cope_lists =["/scratch/PI/russpold/work/HCP/group_maps/copes/tfMRI_WM_2BK_TOOL_copes.txt","/scratch/PI/russpold/work/HCP/group_maps/copes/tfMRI_WM_2BK_PLACE_copes.txt","/scratch/PI/russpold/work/HCP/group_maps/copes/tfMRI_WM_0BK_TOOL_copes.txt","/scratch/PI/russpold/work/HCP/group_maps/copes/tfMRI_WM_0BK_copes.txt","/scratch/PI/russpold/work/HCP/group_maps/copes/tfMRI_MOTOR_T_copes.txt","/scratch/PI/russpold/work/HCP/group_maps/copes/tfMRI_MOTOR_neg_LF_copes.txt","/scratch/PI/russpold/work/HCP/group_maps/copes/tfMRI_MOTOR_AVG-LF_copes.txt","/scratch/PI/russpold/work/HCP/group_maps/copes/tfMRI_MOTOR_AVG-CUE_copes.txt","/scratch/PI/russpold/work/HCP/group_maps/copes/tfMRI_LANGUAGE_neg_STORY_copes.txt"]
+
 for cope_file in cope_lists:
   output_nii = os.path.split(cope_file)[1].replace("_copes.txt","")
   merged_nii_path = "%s/%s_copes_4D.nii" %(output_directory,output_nii)
