@@ -21,7 +21,7 @@ parcels_file = "/scratch/PI/russpold/data/PARCELS/PETERSEN/Parcels_MNI_222.nii"
 
 for input_nii in inputs_nii:
   base_name = os.path.split(input_nii)[1]
-  output_file = "%s/%s" %(output_directory,base_name.replace("copes_4D.nii.gz","hcp_petersen_ts.txt"))
+  output_file = "%s/%s" %(output_directory,base_name.replace("copes_4D.nii.gz","hcp_petersen_roi_means.txt"))
   if not os.path.exists(output_file):
     filey = ".job/%s_petersen_ts.job" %(base_name)
     filey = open(filey,"w")

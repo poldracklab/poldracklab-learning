@@ -86,3 +86,26 @@ for contrast in all_contrasts.iterrows():
   for nii_path in nii_paths:
     filey.writelines("%s\n" %(nii_path))
   filey.close()
+
+
+# STEP 2: RAW TIMESERIES DATA LISTS -------------------------------------------------
+# First we will find all the volume feat directories
+timeseries_files = []
+for root, dirnames, filenames in os.walk(search_directory):
+  for filename in fnmatch.filter(filenames, '*_LR.nii.gz'):
+      #print "Found %s/%s" %(root,filename)
+      timeseries_files.append(os.path.join(root, filename))
+
+# Extract the unique tasks from each
+tdf = pandas.DataFrame()
+ttasks = [os.path.split(os.path.split(x)[0])[1] for x in timeseries_files]
+images = [os.path.split(x)[1] for x in timeseries_files]
+tdf["timeseries_files"] = timeseries_files
+tdf["tasks"] = ttasks
+tdf["images"] = images
+tdf.to_csv("%s/hcp_timeseries_paths.tsv" %(doc_directory),sep="\t")
+
+# Get rid of spin echo field maps
+filtered = tdf[~tdf['images'].str.contains("SpinEchoFieldMap")]
+filtered = filtered[~filtered['images'].str.contains("DWI")]
+filtered.to_csv("%s/hcp_timeseries_paths_filtered.tsv" %(doc_directory),sep="\t")

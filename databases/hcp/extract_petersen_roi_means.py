@@ -18,7 +18,7 @@ parcels = nibabel.load(parcels)
 
 # Get list of subjects, extract subject ids
 subjects = "%s/%s" %(copes_directory,os.path.split(input_file)[1].replace("_4D.nii.gz",".txt"))
-output_file = "%s/%s" %(output_directory,os.path.split(input_file)[1].replace("copes_4D.nii.gz","hcp_petersen_ts.txt"))
+output_file = "%s/%s" %(output_directory,os.path.split(input_file)[1].replace("copes_4D.nii.gz","hcp_petersen_roi_means.txt"))
 subjects = open(subjects,"rb").readlines()
 subids = [sub.split("/")[7] for sub in subjects]
 
