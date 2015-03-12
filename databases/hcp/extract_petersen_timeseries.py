@@ -28,6 +28,11 @@ match = expression.search(vol)
 subid = vol[match.start()+1:match.end()-1]
 labels = ["%s_%s" %(subid,x) for x in parcel_ids]
 nii_obj = nibabel.load(vol)
+
+# IMPORTANT: We are not doing any registration because the petersen parcel file is in the same space, size
+# as our data. If this is not the case, registration needs to be performed here before resampling.
+# Also be cautious about doing any kind of manipulation on the atlas - continuous interpolation
+# will destroy the lookup, and sometimes nearest can eliminate entire values all-together
 nii_resample = resample_img(nii_obj, target_affine=parcels.get_affine(),interpolation="continuous")
 tmp = img_to_signals_labels(nii_resample, parcels, mask_img=None, background_label=0, order='F')
 df_ss = pandas.DataFrame(tmp[0])
