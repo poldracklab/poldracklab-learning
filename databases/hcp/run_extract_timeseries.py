@@ -10,10 +10,11 @@ import re
 
 
 # Output directory
-output_directory = "/scratch/PI/russpold/work/HCP/timeseries/petersen_timeseries"
+name = "subcortical"
+output_directory = "/scratch/PI/russpold/work/HCP/timeseries/%s" %(name)
 
 # The MNI parcels file, 0 should correspond to no label
-parcels_file = "/scratch/PI/russpold/data/PARCELS/PETERSEN/Parcels_MNI_222.nii"
+parcels_file = "/scratch/PI/russpold/data/PARCELS/SUBCORTICAL/HarvardOxford-sub-maxprob-thr50-2mm.nii.gz"
 
 # Read in the full list of the raw timeseries data
 timeseries_file = "/scratch/PI/russpold/work/HCP/group_maps/doc/hcp_timeseries_paths_filtered.tsv"
@@ -40,17 +41,17 @@ for task in unique_tasks:
     # Make the output directory if it does not exist, and specify output file within it
     if not os.path.exists(output_task_directory): os.mkdir(output_task_directory)
     jobname = "%s_%s" %(subid,task)
-    output_file = "%s/%s_%s_petersen.tsv" %(output_task_directory,subid,output_base)
+    output_file = "%s/%s_%s_%s.tsv" %(output_task_directory,subid,output_base,name)
     # Only run the job if the output file doesn't exist
     if not os.path.exists(output_file):
-      filey = ".job/%s_petersen_ts.job" %(jobname)
+      filey = ".job/%s_%s_ts.job" %(jobname,name)
       filey = open(filey,"w")
       filey.writelines("#!/bin/bash\n")
-      filey.writelines("#SBATCH --job-name=%s_petersen_ts\n" %(jobname))
+      filey.writelines("#SBATCH --job-name=%s_%s_ts\n" %(jobname,name))
       filey.writelines("#SBATCH --output=.out/ts_%s.out\n" %(jobname))
       filey.writelines("#SBATCH --error=.out/ts_%s.err\n" %(jobname))
       filey.writelines("#SBATCH --time=2-00:00\n")
       filey.writelines("#SBATCH --mem=64000\n")
-      filey.writelines("python /scratch/PI/russpold/work/HCP/timeseries/script/extract_petersen_timeseries.py %s %s %s\n" %(func,parcels_file,output_file))
+      filey.writelines("python /scratch/PI/russpold/work/HCP/timeseries/script/extract_timeseries.py %s %s %s\n" %(func,parcels_file,output_file))
       filey.close()
-      os.system("sbatch -p russpold .job/%s_petersen_ts.job" %(jobname))
+      os.system("sbatch -p russpold .job/%s_%s_ts.job" %(jobname,name))
