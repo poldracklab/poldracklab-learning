@@ -30,6 +30,7 @@ for cope_file in copes_files:
     # Write updated cope paths file (delete old after)
     filey = open(new_cope_file,"wb")
     filey.writelines("/n".join(copes))
+    filey.close()
     # For each cope file
     for cope in copes:
         old_path = "%s%s" %(old_directory,cope)
