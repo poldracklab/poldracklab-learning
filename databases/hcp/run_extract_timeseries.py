@@ -10,14 +10,14 @@ import re
 
 
 # Output directory
-name = "subcortical"
+name = "petersen_timeseries"
 output_directory = "/scratch/PI/russpold/work/HCP/timeseries/%s" %(name)
 
 # The MNI parcels file, 0 should correspond to no label
-parcels_file = "/scratch/PI/russpold/data/PARCELS/SUBCORTICAL/HarvardOxford-sub-maxprob-thr50-2mm.nii.gz"
+parcels_file = "/scratch/PI/russpold/data/PARCELS/PETERSEN/Parcels_MNI_222.nii"
 
 # Read in the full list of the raw timeseries data
-timeseries_file = "/scratch/PI/russpold/work/HCP/group_maps/doc/hcp_timeseries_paths_filtered.tsv"
+timeseries_file = "/scratch/PI/russpold/work/HCP/group_maps/doc/hcp_timeseries_paths_RL_filtered.tsv"
 timeseries_file = pandas.read_csv(timeseries_file,sep="\t")
 unique_tasks = timeseries_file.tasks.unique()
 
